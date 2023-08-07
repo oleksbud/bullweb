@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BullWeb.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BullWeb.Data;
 
@@ -6,6 +7,7 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base (options)
     {
-        
     }
+
+    public DbSet<Category> Categories { get; set; }
 }
