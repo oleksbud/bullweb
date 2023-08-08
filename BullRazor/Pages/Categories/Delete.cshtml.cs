@@ -33,6 +33,7 @@ public class Delete : PageModel
 
         _context.Categories.Remove(category);
         _context.SaveChanges();
+        TempData["success"] = "Category has deleted successfully";
         return RedirectToPage("Index");
     }
 }

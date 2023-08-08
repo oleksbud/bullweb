@@ -28,8 +28,8 @@ public class Edit : PageModel
         if (ModelState.IsValid && Category != null)
         {
             _context.Categories.Update(Category);
-            _context.SaveChanges();
-            // TempData["success"] = "Category has updated successfully";
+            _context.SaveChanges(); 
+            TempData["success"] = "Category has updated successfully";
             return RedirectToPage("Index");
         }
 
