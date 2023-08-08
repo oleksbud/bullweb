@@ -1,4 +1,5 @@
 ﻿using BullWeb.Data;
+using BullWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Controllers;
@@ -21,5 +22,13 @@ public class CategoryController : Controller
     public IActionResult Create()
     {
         return View();
+    }
+
+    [HttpPost]
+    public IActionResult Create(Category category)
+    {
+        _context.Categories.Add(category);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
     }
 }
