@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BullWeb.Migrations
+namespace Bull.DataAccess.Migrations
 {
     public partial class Initial : Migration
     {

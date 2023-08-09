@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using Bull.Models.Models;
 using Microsoft.AspNetCore.Mvc;
-using BullWeb.Models;
 
 namespace BullWeb.Controllers;
 

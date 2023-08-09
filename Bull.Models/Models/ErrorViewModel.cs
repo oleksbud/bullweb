@@ -1,4 +1,4 @@
-namespace BullWeb.Models;
+namespace Bull.Models.Models;
 
 public class ErrorViewModel
 {
