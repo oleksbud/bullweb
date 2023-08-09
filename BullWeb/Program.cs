@@ -1,4 +1,4 @@
-using BullWeb.Data;
+using Bull.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
