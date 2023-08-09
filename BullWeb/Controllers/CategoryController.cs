@@ -1,5 +1,5 @@
-﻿using BullWeb.Data;
-using BullWeb.Models;
+﻿using Bull.DataAccess.Data;
+using Bull.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Controllers;

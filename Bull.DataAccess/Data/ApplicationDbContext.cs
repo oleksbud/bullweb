@@ -1,7 +1,7 @@
-﻿using BullWeb.Models;
+﻿using Bull.Models.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BullWeb.Data;
+namespace Bull.DataAccess.Data;
 
 public class ApplicationDbContext : DbContext
 {
@@ -9,7 +9,7 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<Category> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

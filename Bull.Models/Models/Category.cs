@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BullWeb.Models;
+namespace Bull.Models.Models;
 
 public class Category
 {
