@@ -18,9 +18,4 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         _context.Update(category);
     }
-
-    public void Save()
-    {
-        _context.SaveChanges();
-    }
 }
