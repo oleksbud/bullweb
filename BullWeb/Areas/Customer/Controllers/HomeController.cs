@@ -2,8 +2,8 @@
 using Bull.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BullWeb.Controllers;
-
+namespace BullWeb.Areas.Customer.Controllers;
+[Area("Customer")]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
