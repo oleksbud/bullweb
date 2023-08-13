@@ -22,7 +22,8 @@ public class BookController : Controller
 
     public IActionResult Create()
     {
-        ViewBag.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
+        // ViewBag.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
+        ViewData["CategoryList"] = _unitOfWork.CategoryRepository.GetSelectOptions();
         return View();
     }
 
