@@ -40,7 +40,9 @@ public class Book
     public double Price100 { get; set; }
 
     public int CategoryId { get; set; }
-    
+
+    public string ImageUrl { get; set; } = string.Empty;
+
     [ForeignKey("CategoryId")]
     public Category Category { get; set; }
 }
