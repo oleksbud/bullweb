@@ -1,7 +1,7 @@
 ﻿using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Bull.Models.ViewModels;
 
 namespace BullWeb.Areas.Admin.Controllers;
 [Area("Admin")]
@@ -22,23 +22,29 @@ public class BookController : Controller
 
     public IActionResult Create()
     {
-        // ViewBag.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
-        ViewData["CategoryList"] = _unitOfWork.CategoryRepository.GetSelectOptions();
-        return View();
+        var model = new BookViewModel()
+        {
+            Book = new Book(),
+            CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions()
+        };
+        return View(model);
     }
 
     [HttpPost]
-    public IActionResult Create(Book book)
+    public IActionResult Create(BookViewModel model)
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.BookRepository.Add(book);
+            _unitOfWork.BookRepository.Add(model.Book);
             _unitOfWork.Save();
             TempData["success"] = "Book has created successfully";
             return RedirectToAction("Index");
         }
-
-        return View();
+        else
+        {
+            model.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
+            return View(model);
+        }
     }
 
     public IActionResult Edit(int? id)

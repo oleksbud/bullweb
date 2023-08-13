@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Bull.Models.Models;
 
@@ -41,8 +42,10 @@ public class Book
 
     public int CategoryId { get; set; }
 
-    public string ImageUrl { get; set; } = string.Empty;
+    [ValidateNever]
+    public string? ImageUrl { get; set; }
 
     [ForeignKey("CategoryId")]
+    [ValidateNever]
     public Category Category { get; set; }
 }
