@@ -1,6 +1,7 @@
 ﻿using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BullWeb.Areas.Admin.Controllers;
 [Area("Admin")]
@@ -16,6 +17,12 @@ public class BookController : Controller
     public IActionResult Index()
     {
         var books = _unitOfWork.BookRepository.GetAll().ToList();
+        IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepository.GetAll()
+            .Select(p => new SelectListItem
+            {
+                Text = p.Name,
+                Value = p.Id.ToString()
+            });
         return View(books);
     }
 
