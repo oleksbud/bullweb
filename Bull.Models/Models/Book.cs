@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bull.Models.Models;
 
@@ -37,4 +38,9 @@ public class Book
     [DisplayName("Price for 100+")]
     [Range(1, 10000)]
     public double Price100 { get; set; }
+
+    public int CategoryId { get; set; }
+    
+    [ForeignKey("CategoryId")]
+    public Category Category { get; set; }
 }
