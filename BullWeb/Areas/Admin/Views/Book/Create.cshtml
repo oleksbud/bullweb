@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model BookViewModel
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="p-3 mt-4">
         <div class="row pb-2">
             <h2 class="text-primary">Create Book</h2>
@@ -56,8 +56,7 @@
         </div>
         <div class="mb-3">
             <label asp-for="Book.ImageUrl" class="p-0"></label>
-            <input asp-for="Book.ImageUrl" class="form-control"/>
-            <span asp-validation-for="Book.ImageUrl" class="text-danger"></span>
+            <input type="file" asp-for="Book.ImageUrl" class="form-control"/>
         </div>
         <div class="row">
             <div class="col-6">
