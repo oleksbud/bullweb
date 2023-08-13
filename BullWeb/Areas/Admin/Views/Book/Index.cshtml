@@ -1,0 +1,50 @@
+﻿@model  List<Book>
+<partial name="_Notification" />
+
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Book List</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Book
+            </a>
+        </div>
+    </div>
+    
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Author</th>
+            <th>Title</th>
+            <th>ISBN</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.OrderBy(c => c.Author))
+        {
+            <tr>
+                <td>@item.Author</td>
+                <td>@item.Title</td>
+                <td>@item.Isbn</td>
+                <td>@item.Price</td>
+                <td>TBD</td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary mx-2">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-2">
+                            <i class="bi bi-trash-fill"></i> Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
