@@ -17,17 +17,12 @@ public class BookController : Controller
     public IActionResult Index()
     {
         var books = _unitOfWork.BookRepository.GetAll().ToList();
-        IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepository.GetAll()
-            .Select(p => new SelectListItem
-            {
-                Text = p.Name,
-                Value = p.Id.ToString()
-            });
         return View(books);
     }
 
     public IActionResult Create()
     {
+        ViewBag.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
         return View();
     }
 
