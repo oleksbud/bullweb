@@ -55,7 +55,7 @@ public class BookController : Controller
             {
                 var pathFromRoot = @"images\books";
                 SaveFile(file, pathFromRoot, out var fileName);
-                model.Book.ImageUrl = pathFromRoot + @"\" + fileName;
+                model.Book.ImageUrl = @"\" + pathFromRoot + @"\" + fileName;
             }
             _unitOfWork.BookRepository.Add(model.Book);
             _unitOfWork.Save();
