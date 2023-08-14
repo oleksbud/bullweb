@@ -54,10 +54,24 @@ public class BookController : Controller
             if (file != null)
             {
                 var pathFromRoot = @"images\books";
+
+                if (!string.IsNullOrEmpty(model.Book.ImageUrl))
+                {
+                    DeleteFile(model.Book.ImageUrl.TrimStart('\\'));
+                }
                 SaveFile(file, pathFromRoot, out var fileName);
                 model.Book.ImageUrl = @"\" + pathFromRoot + @"\" + fileName;
             }
-            _unitOfWork.BookRepository.Add(model.Book);
+
+            if (model.Book.Id == 0)
+            {
+                _unitOfWork.BookRepository.Add(model.Book);
+            }
+            else
+            {
+                _unitOfWork.BookRepository.Update(model.Book);
+            }
+
             _unitOfWork.Save();
             TempData["success"] = "Book has created successfully";
             return RedirectToAction("Index");
@@ -69,11 +83,23 @@ public class BookController : Controller
         }
     }
 
+    private void DeleteFile(string fileName)
+    {
+        var wwwRootPath = _webHostEnvironment.WebRootPath;
+        var path = Path.Combine(wwwRootPath, fileName);
+
+        if (System.IO.File.Exists(path))
+        {
+            System.IO.File.Delete(path);
+        }
+    }
+
     private void SaveFile(IFormFile file, string pathFromRoot, out string fileName)
     {
         var wwwRootPath = _webHostEnvironment.WebRootPath;
         fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
         var path = Path.Combine(wwwRootPath, pathFromRoot);
+
 
         using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
         {
