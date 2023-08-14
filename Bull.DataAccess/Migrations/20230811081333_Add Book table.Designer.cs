@@ -3,6 +3,7 @@ using Bull.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bull.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230811081333_Add Book table")]
+    partial class AddBooktable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,14 +35,7 @@ namespace Bull.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Isbn")
@@ -65,8 +60,6 @@ namespace Bull.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Books");
 
                     b.HasData(
@@ -74,9 +67,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 1,
                             Author = "Billy Spark",
-                            CategoryId = 1,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "SWD9999001",
                             ListPrice = 99.0,
                             Price = 90.0,
@@ -88,9 +79,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 2,
                             Author = "Nancy Hoover",
-                            CategoryId = 1,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "CAW777777701",
                             ListPrice = 40.0,
                             Price = 30.0,
@@ -102,9 +91,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 3,
                             Author = "Julian Button",
-                            CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "RITO5555501",
                             ListPrice = 55.0,
                             Price = 50.0,
@@ -116,9 +103,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 4,
                             Author = "Abby Muscles",
-                            CategoryId = 1,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "WS3333333301",
                             ListPrice = 70.0,
                             Price = 65.0,
@@ -130,9 +115,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 5,
                             Author = "Ron Parker",
-                            CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "SOTJ1111111101",
                             ListPrice = 30.0,
                             Price = 27.0,
@@ -144,9 +127,7 @@ namespace Bull.DataAccess.Migrations
                         {
                             Id = 6,
                             Author = "Laura Phantom",
-                            CategoryId = 1,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Isbn = "FOT000000001",
                             ListPrice = 25.0,
                             Price = 23.0,
@@ -195,17 +176,6 @@ namespace Bull.DataAccess.Migrations
                             DisplayOrder = 3,
                             Name = "History"
                         });
-                });
-
-            modelBuilder.Entity("Bull.Models.Models.Book", b =>
-                {
-                    b.HasOne("Bull.Models.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

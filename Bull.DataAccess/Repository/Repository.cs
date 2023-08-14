@@ -17,15 +17,31 @@ public class Repository<T> : IRepository<T> where T : class
     }
     
     public IEnumerable<T> GetAll()
-    { 
+    {
         IQueryable<T> query = dbSet;
-        
+        return  query.ToList();
+    }
+    
+    public IEnumerable<T> GetAll(List<string> includeProperties)
+    {
+        IQueryable<T> query = dbSet;
+        IncludeProperties(includeProperties, ref query);
+
         return  query.ToList();
     }
 
     public T? Get(Expression<Func<T, bool>> filter)
     {
         IQueryable<T> query = dbSet;
+        query = query.Where(filter);
+
+        return query.FirstOrDefault();
+    }
+
+    public T? Get(Expression<Func<T, bool>> filter, List<string> includeProperties)
+    {
+        IQueryable<T> query = dbSet;
+        IncludeProperties(includeProperties, ref query);
         query = query.Where(filter);
 
         return query.FirstOrDefault();
@@ -44,5 +60,16 @@ public class Repository<T> : IRepository<T> where T : class
     public void RemoveRange(IEnumerable<T> entities)
     {
         dbSet.RemoveRange(entities);
+    }
+
+    private static void IncludeProperties(List<string> includeProperties, ref IQueryable<T> query)
+    {
+        if (includeProperties.Count > 0)
+        {
+            foreach (var prop in includeProperties)
+            {
+                query = query.Include(prop);
+            }
+        }
     }
 }

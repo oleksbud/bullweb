@@ -1,3 +1,6 @@
 ﻿/.idea
 /**/obj
 /**/bin
+
+# Test data
+/BullWeb/wwwroot/images/books
