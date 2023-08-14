@@ -2,6 +2,7 @@
 using Bull.DataAccess.Data;
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bull.DataAccess.Repository;
 
@@ -13,7 +14,7 @@ public class BookRepository : Repository<Book>, IBookRepository
     {
         _context = context;
     }
-    
+
     public void Update(Book book)
     {
         var storedBook = _context.Books.FirstOrDefault(x => x.Id == book.Id);
