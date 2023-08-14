@@ -3,8 +3,9 @@
 
 <form method="post" enctype="multipart/form-data">
     <div class="p-3 mt-4">
+        <input hidden asp-for="Book.Id"/>
         <div class="row pb-2">
-            <h2 class="text-primary">Create Book</h2>
+            <h2 class="text-primary">@(Model.Book.Id != 0 ? "Update" : "Create") Book</h2>
             <hr/>
         </div>
         <div class="mb-3">
