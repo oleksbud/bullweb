@@ -8,10 +8,12 @@ namespace BullWeb.Areas.Admin.Controllers;
 public class BookController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public BookController(IUnitOfWork unitOfWork)
+    public BookController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
     {
         _unitOfWork = unitOfWork;
+        _webHostEnvironment = webHostEnvironment;
     }
     
     public IActionResult Index()
@@ -49,6 +51,12 @@ public class BookController : Controller
     {
         if (ModelState.IsValid)
         {
+            if (file != null)
+            {
+                var pathFromRoot = @"images\books";
+                SaveFile(file, pathFromRoot, out var fileName);
+                model.Book.ImageUrl = pathFromRoot + @"\" + fileName;
+            }
             _unitOfWork.BookRepository.Add(model.Book);
             _unitOfWork.Save();
             TempData["success"] = "Book has created successfully";
@@ -58,6 +66,18 @@ public class BookController : Controller
         {
             model.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
             return View(model);
+        }
+    }
+
+    private void SaveFile(IFormFile file, string pathFromRoot, out string fileName)
+    {
+        var wwwRootPath = _webHostEnvironment.WebRootPath;
+        fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        var path = Path.Combine(wwwRootPath, pathFromRoot);
+
+        using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+        {
+            file.CopyTo(fileStream);
         }
     }
 
