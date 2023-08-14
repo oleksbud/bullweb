@@ -20,18 +20,32 @@ public class BookController : Controller
         return View(books);
     }
 
-    public IActionResult Create()
+    public IActionResult UpdateOrCreate(int? id)
     {
         var model = new BookViewModel()
         {
-            Book = new Book(),
             CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions()
         };
-        return View(model);
+        if (id == null || id == 0)
+        {
+            model.Book = new Book();
+            return View(model);
+        }
+        else
+        {
+            var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            model.Book = book;
+            return View(model);
+        }
     }
 
     [HttpPost]
-    public IActionResult Create(BookViewModel model)
+    public IActionResult UpdateOrCreate(BookViewModel model, IFormFile? file)
     {
         if (ModelState.IsValid)
         {
@@ -45,36 +59,6 @@ public class BookController : Controller
             model.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
             return View(model);
         }
-    }
-
-    public IActionResult Edit(int? id)
-    {
-        if (id == null || id == 0)
-        {
-            return NotFound();
-        }
-
-        var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
-        if (book == null)
-        {
-            return NotFound();
-        }
-
-        return View(book);
-    }
-
-    [HttpPost]
-    public IActionResult Edit(Book book)
-    {
-        if (ModelState.IsValid)
-        {
-            _unitOfWork.BookRepository.Update(book);
-            _unitOfWork.Save();
-            TempData["success"] = "Book has updated successfully";
-            return RedirectToAction("Index");
-        }
-
-        return View();
     }
 
     public IActionResult Delete(int? id)
