@@ -1,10 +1,13 @@
 ﻿using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
-using Microsoft.AspNetCore.Mvc;
 using Bull.Models.ViewModels;
+using Bull.Utility;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Areas.Admin.Controllers;
 [Area("Admin")]
+[Authorize(Roles = StaticDetails.RoleAdmin)] 
 public class BookController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
