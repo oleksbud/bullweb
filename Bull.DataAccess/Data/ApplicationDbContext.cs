@@ -1,9 +1,11 @@
 ﻿using Bull.Models.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bull.DataAccess.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base (options)
     {
@@ -11,6 +13,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Book> Books { get; set; } = null!;
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
