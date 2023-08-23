@@ -4,6 +4,7 @@ using Bull.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bull.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230820111912_CompanyEntiry")]
+    partial class CompanyEntiry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,38 +229,6 @@ namespace Bull.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = "Springfield",
-                            Name = "Tech Solution",
-                            PhoneNumber = "+1(555)514214",
-                            PostalCode = "54615",
-                            State = "IL",
-                            StreetAddress = "Elm Street,1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Springfield",
-                            Name = "Inovatix",
-                            PhoneNumber = "+1(555)514234",
-                            PostalCode = "54615",
-                            State = "IL",
-                            StreetAddress = "Elm Street,2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Springfield",
-                            Name = "Hesla",
-                            PhoneNumber = "+1(555)514414",
-                            PostalCode = "54615",
-                            State = "IL",
-                            StreetAddress = "Elm Street,3"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -472,10 +442,6 @@ namespace Bull.DataAccess.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<int>("Name")
                         .HasColumnType("int");
 
@@ -487,8 +453,6 @@ namespace Bull.DataAccess.Migrations
 
                     b.Property<string>("StreetAddress")
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
@@ -553,17 +517,6 @@ namespace Bull.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Bull.Models.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Bull.Models.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
                 });
 #pragma warning restore 612, 618
         }
