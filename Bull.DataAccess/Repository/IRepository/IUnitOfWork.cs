@@ -4,6 +4,7 @@ public interface IUnitOfWork
 {
     ICategoryRepository CategoryRepository { get;  }
     IBookRepository BookRepository { get; }
+    ICompanyRepository CompanyRepository { get; }
 
     public void Save();
 }
