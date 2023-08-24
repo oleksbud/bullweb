@@ -10,6 +10,7 @@ public class UnitOfWork : IUnitOfWork
     public IBookRepository BookRepository { get; private set; }
     public ICompanyRepository CompanyRepository { get; private set;}
     public IShoppingCartRepository ShoppingCartRepository { get; private set;}
+    public IApplicationUserRepository ApplicationUserRepository { get; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -18,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
         BookRepository = new BookRepository(_context);
         CompanyRepository = new CompanyRepository(_context);
         ShoppingCartRepository = new ShoppingCartRepository(_context);
+        ApplicationUserRepository = new ApplicationUserRepository(_context);
     }
     
     public void Save()
