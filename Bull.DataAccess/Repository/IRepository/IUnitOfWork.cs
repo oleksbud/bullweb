@@ -6,6 +6,7 @@ public interface IUnitOfWork
     IBookRepository BookRepository { get; }
     ICompanyRepository CompanyRepository { get; }
     IShoppingCartRepository ShoppingCartRepository { get; }
+    IApplicationUserRepository ApplicationUserRepository { get; }
 
     public void Save();
 }
