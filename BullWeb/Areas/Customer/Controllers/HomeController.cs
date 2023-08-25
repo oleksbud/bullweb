@@ -33,7 +33,14 @@ public class HomeController : Controller
         }
         _logger.Log(LogLevel.Information, "Book requested: {Title}",book.Title);
        
-        return View(book);
+        ShoppingCart cart = new()
+        {
+           BookId = id,
+           Book = book,
+           Count = 1,
+        };
+        
+        return View(cart);
     }
 
     public IActionResult Privacy()
