@@ -62,7 +62,7 @@ public class HomeController : Controller
         {
             // the book record in the shopping cart exists. Update it
             cartFromDb.Count += shoppingCart.Count;
-            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+            // _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
         }
         else
         {
