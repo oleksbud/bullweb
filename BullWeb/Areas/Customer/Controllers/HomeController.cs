@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
+using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Areas.Customer.Controllers;
@@ -41,6 +44,20 @@ public class HomeController : Controller
         };
         
         return View(cart);
+    }
+    
+    [HttpPost]
+    [Authorize]
+    public IActionResult Details(ShoppingCart cart)
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        cart.ApplicationUserId = userId;
+        
+        _unitOfWork.ShoppingCartRepository.Add(cart);
+        _unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Privacy()
