@@ -48,13 +48,28 @@ public class HomeController : Controller
     
     [HttpPost]
     [Authorize]
-    public IActionResult Details(ShoppingCart cart)
+    public IActionResult Details(ShoppingCart shoppingCart)
     {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-        cart.ApplicationUserId = userId;
-        
-        _unitOfWork.ShoppingCartRepository.Add(cart);
+        shoppingCart.ApplicationUserId = userId;
+
+        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(
+            x => x.ApplicationUserId == userId
+            && x.BookId == shoppingCart.BookId);
+
+        if (cartFromDb != null)
+        {
+            // the book record in the shopping cart exists. Update it
+            cartFromDb.Count += shoppingCart.Count;
+            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+        }
+        else
+        {
+            // add cart
+            _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+        }
+
         _unitOfWork.Save();
 
         return RedirectToAction(nameof(Index));
