@@ -1,12 +1,13 @@
 ﻿@model ShoppingCart
 
 <form method="post">
+    <input hidden asp-for="Id" value="@Model.Id"/>
     <input hidden asp-for="BookId"/>
     <div class="card shadow border-0 mt-4">
         <div class="card-header bg-secondary bg-gradient text-light py-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h3 class="text-white text-uppercase">@Model.Book.Title</h3>
+                    <h3 class="text-white text-uppercase">@Model.Book.Title (@Model.Id)</h3>
                     <p class="text-white-50 fw-semibold mb-0">by @Model.Book.Author</p>
                 </div>
             </div>

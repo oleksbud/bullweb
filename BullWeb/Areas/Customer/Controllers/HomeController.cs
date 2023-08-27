@@ -22,7 +22,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var dictionary = new List<string> { "Category" };
-        IEnumerable<Book> books = _unitOfWork.BookRepository.GetAll(dictionary);
+        IEnumerable<Book> books = _unitOfWork.BookRepository.GetAll(x => true ,includeProperties: dictionary);
         return View(books);
     }
 
@@ -40,7 +40,7 @@ public class HomeController : Controller
         {
            BookId = id,
            Book = book,
-           Count = 1,
+           Count = 1
         };
         
         return View(cart);
@@ -50,8 +50,7 @@ public class HomeController : Controller
     [Authorize]
     public IActionResult Details(ShoppingCart shoppingCart)
     {
-        var claimsIdentity = (ClaimsIdentity)User.Identity;
-        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         shoppingCart.ApplicationUserId = userId;
 
         var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(
@@ -62,7 +61,7 @@ public class HomeController : Controller
         {
             // the book record in the shopping cart exists. Update it
             cartFromDb.Count += shoppingCart.Count;
-            // _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
         }
         else
         {
