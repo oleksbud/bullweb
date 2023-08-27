@@ -22,7 +22,7 @@ public class BookController : Controller
     public IActionResult Index()
     {
         var includeDictionaries = new List<string> { "Category" };
-        var books = _unitOfWork.BookRepository.GetAll(includeDictionaries).ToList();
+        var books = _unitOfWork.BookRepository.GetAll(x => true, includeDictionaries).ToList();
         return View(books);
     }
 

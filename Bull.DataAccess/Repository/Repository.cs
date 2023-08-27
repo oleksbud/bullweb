@@ -16,15 +16,21 @@ public class Repository<T> : IRepository<T> where T : class
         this.dbSet = _context.Set<T>();
     }
     
-    public IEnumerable<T> GetAll()
+    public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
     {
         IQueryable<T> query = dbSet;
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+       
         return  query.ToList();
     }
     
-    public IEnumerable<T> GetAll(List<string> includeProperties)
+    public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter, List<string> includeProperties)
     {
         IQueryable<T> query = dbSet;
+        query = query.Where(filter);
         IncludeProperties(includeProperties, ref query);
 
         return  query.ToList();
@@ -32,7 +38,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public T? Get(Expression<Func<T, bool>> filter)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = dbSet.AsNoTracking();
         query = query.Where(filter);
 
         return query.FirstOrDefault();
@@ -40,7 +46,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public T? Get(Expression<Func<T, bool>> filter, List<string> includeProperties)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = dbSet.AsNoTracking();
         IncludeProperties(includeProperties, ref query);
         query = query.Where(filter);
 
