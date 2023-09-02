@@ -2,6 +2,7 @@
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
 using Bull.Models.ViewModels;
+using Bull.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,16 +43,13 @@ public class CartController : Controller
 
     private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
     {
-        if (shoppingCart.Count < 50)
+        var wholeSaleConfig = new List<WholeSaleConfigItem>
         {
-            return shoppingCart.Book.Price;
-        }
-        
-        if (shoppingCart.Count < 100)
-        {
-            return shoppingCart.Book.Price50;
-        }
-        
-        return shoppingCart.Book.Price100;
+            new() { Amount = 0, Price = shoppingCart.Book.Price },
+            new () { Amount = 50, Price = shoppingCart.Book.Price50 },
+            new () { Amount = 100, Price = shoppingCart.Book.Price100 }
+        };
+
+        return DiscountCalculations.GetPriceBasedOnQuantity(wholeSaleConfig, shoppingCart.Count);
     }
 }
