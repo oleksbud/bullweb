@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Bull.DataAccess.Repository.IRepository;
+using Bull.Models.Models;
 using Bull.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,28 @@ public class CartController : Controller
             ShoppingCartList = _unitOfWork.ShoppingCartRepository.GetAll(x => x.ApplicationUserId == userId,
                 includeProperties: includeDictionaries)
         };
+
+        foreach (var cart in ShoppingCartVm.ShoppingCartList)
+        {
+            cart.Price = GetPriceBasedOnQuantity(cart);
+            ShoppingCartVm.Total += (cart.Price * cart.Count);
+        }
         
         return View(ShoppingCartVm);
+    }
+
+    private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
+    {
+        if (shoppingCart.Count < 50)
+        {
+            return shoppingCart.Book.Price;
+        }
+        
+        if (shoppingCart.Count < 100)
+        {
+            return shoppingCart.Book.Price50;
+        }
+        
+        return shoppingCart.Book.Price100;
     }
 }
