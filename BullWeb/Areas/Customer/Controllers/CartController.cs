@@ -41,6 +41,59 @@ public class CartController : Controller
         return View(ShoppingCartVm);
     }
 
+    public IActionResult Plus(int cartId)
+    {
+        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+
+        if (cartFromDb == null)
+        {
+            return NotFound();
+        }
+        cartFromDb.Count += 1;
+        _unitOfWork.ShoppingCartRepository.Update(cartFromDb);  
+        _unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    public IActionResult Minus(int cartId)
+    {
+        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+
+        if (cartFromDb == null)
+        {
+            return NotFound();
+        }
+
+        if (cartFromDb.Count < 1)
+        {
+            _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+        }
+        else
+        {
+            cartFromDb.Count -= 1;
+            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);  
+        }
+        _unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    public IActionResult Remove(int cartId)
+    {
+        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+
+        if (cartFromDb == null)
+        {
+            return NotFound();
+        }
+        
+        _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+        _unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
+    }
+
     private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
     {
         var wholeSaleConfig = new List<WholeSaleConfigItem>
