@@ -1,2 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DFB015FC_002DC2E8_002D429A_002DB781_002DBAD6A4999BC5_002Fd_003AData_002Ff_003AApplicationDbContext_002Ecs/@EntryIndexedValue">ForceIncluded</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DFB015FC_002DC2E8_002D429A_002DB781_002DBAD6A4999BC5_002Fd_003AData_002Ff_003AApplicationDbContext_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7d6e7eb2_002De09e_002D46ab_002Dbda8_002Da15c17e67ece/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CartControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::9415AAE1-0E2A-4E75-B31F-F56AC4985AB9::net6.0::Bull.Test.AreaCustomer.CartControllerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

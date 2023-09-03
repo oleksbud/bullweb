@@ -10,4 +10,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Bull.Models\Bull.Models.csproj" />
+    </ItemGroup>
+
 </Project>

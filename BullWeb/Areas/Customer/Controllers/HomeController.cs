@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
+using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Areas.Customer.Controllers;
@@ -19,7 +22,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var dictionary = new List<string> { "Category" };
-        IEnumerable<Book> books = _unitOfWork.BookRepository.GetAll(dictionary);
+        IEnumerable<Book> books = _unitOfWork.BookRepository.GetAll(x => true ,includeProperties: dictionary);
         return View(books);
     }
 
@@ -33,7 +36,42 @@ public class HomeController : Controller
         }
         _logger.Log(LogLevel.Information, "Book requested: {Title}",book.Title);
        
-        return View(book);
+        ShoppingCart cart = new()
+        {
+           BookId = id,
+           Book = book,
+           Count = 1
+        };
+        
+        return View(cart);
+    }
+    
+    [HttpPost]
+    [Authorize]
+    public IActionResult Details(ShoppingCart shoppingCart)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        shoppingCart.ApplicationUserId = userId;
+
+        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(
+            x => x.ApplicationUserId == userId
+            && x.BookId == shoppingCart.BookId);
+
+        if (cartFromDb != null)
+        {
+            // the book record in the shopping cart exists. Update it
+            cartFromDb.Count += shoppingCart.Count;
+            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+        }
+        else
+        {
+            // add cart
+            _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+        }
+
+        _unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Privacy()
