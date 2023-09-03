@@ -94,6 +94,11 @@ public class CartController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public IActionResult Summary()
+    {
+        return View();
+    }
+
     private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
     {
         var wholeSaleConfig = new List<WholeSaleConfigItem>
