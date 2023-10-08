@@ -6,20 +6,24 @@ namespace Bull.DataAccess.Repository;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
-    public ICategoryRepository CategoryRepository { get; private set; }
-    public IBookRepository BookRepository { get; private set; }
-    public ICompanyRepository CompanyRepository { get; private set;}
-    public IShoppingCartRepository ShoppingCartRepository { get; private set;}
-    public IApplicationUserRepository ApplicationUserRepository { get; }
+    public ICategoryRepository Category { get; private set; }
+    public IBookRepository Book { get; private set; }
+    public ICompanyRepository Company { get; private set;}
+    public IShoppingCartRepository ShoppingCart { get; private set;}
+    public IApplicationUserRepository ApplicationUser { get; }
+    public IOrderHeaderRepository OrderHeader { get; }
+    public IOrderDetailRepository OrderDetail { get; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
-        CategoryRepository = new CategoryRepository(_context);
-        BookRepository = new BookRepository(_context);
-        CompanyRepository = new CompanyRepository(_context);
-        ShoppingCartRepository = new ShoppingCartRepository(_context);
-        ApplicationUserRepository = new ApplicationUserRepository(_context);
+        Category = new CategoryRepository(_context);
+        Book = new BookRepository(_context);
+        Company = new CompanyRepository(_context);
+        ShoppingCart = new ShoppingCartRepository(_context);
+        ApplicationUser = new ApplicationUserRepository(_context);
+        OrderHeader = new OrderHeaderRepository(_context);
+        OrderDetail = new OrderDetailRepository(_context);
     }
     
     public void Save()

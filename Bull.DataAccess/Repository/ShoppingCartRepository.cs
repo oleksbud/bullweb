@@ -16,7 +16,7 @@ public class ShoppingCartRepository : Repository<ShoppingCart>, IShoppingCartRep
     
     public void Update(ShoppingCart shoppingCart)
     {
-        _context.Update(shoppingCart);
+        _context.ShoppingCarts.Update(shoppingCart);
     }
     
 }

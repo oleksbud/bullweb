@@ -22,7 +22,7 @@ public class BookController : Controller
     public IActionResult Index()
     {
         var includeDictionaries = new List<string> { "Category" };
-        var books = _unitOfWork.BookRepository.GetAll(x => true, includeDictionaries).ToList();
+        var books = _unitOfWork.Book.GetAll(x => true, includeDictionaries).ToList();
         return View(books);
     }
 
@@ -30,7 +30,7 @@ public class BookController : Controller
     {
         var model = new BookViewModel()
         {
-            CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions()
+            CategoryList = _unitOfWork.Category.GetSelectOptions()
         };
         if (id == null || id == 0)
         {
@@ -39,7 +39,7 @@ public class BookController : Controller
         }
         else
         {
-            var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
+            var book = _unitOfWork.Book.Get(x => x.Id == id);
             if (book == null)
             {
                 return NotFound();
@@ -69,11 +69,11 @@ public class BookController : Controller
 
             if (model.Book.Id == 0)
             {
-                _unitOfWork.BookRepository.Add(model.Book);
+                _unitOfWork.Book.Add(model.Book);
             }
             else
             {
-                _unitOfWork.BookRepository.Update(model.Book);
+                _unitOfWork.Book.Update(model.Book);
             }
 
             _unitOfWork.Save();
@@ -82,7 +82,7 @@ public class BookController : Controller
         }
         else
         {
-            model.CategoryList = _unitOfWork.CategoryRepository.GetSelectOptions();
+            model.CategoryList = _unitOfWork.Category.GetSelectOptions();
             return View(model);
         }
     }
@@ -118,7 +118,7 @@ public class BookController : Controller
             return NotFound();
         }
 
-        var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
+        var book = _unitOfWork.Book.Get(x => x.Id == id);
         if (book == null)
         {
             return NotFound();
@@ -130,13 +130,13 @@ public class BookController : Controller
     [HttpPost, ActionName("Delete")]
     public IActionResult UltimateDelete(int? id)
     {
-        var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
+        var book = _unitOfWork.Book.Get(x => x.Id == id);
         if (book == null)
         {
             return NotFound();
         }
 
-        _unitOfWork.BookRepository.Remove(book);
+        _unitOfWork.Book.Remove(book);
         _unitOfWork.Save();
         TempData["success"] = "Book has deleted successfully";
         return RedirectToAction("Index");

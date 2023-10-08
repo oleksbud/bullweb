@@ -18,7 +18,7 @@ public class CategoryController : Controller
     
     public IActionResult Index()
     {
-        var categoryList = _unitOfWork.CategoryRepository.GetAll().ToList();
+        var categoryList = _unitOfWork.Category.GetAll().ToList();
         return View(categoryList);
     }
 
@@ -32,7 +32,7 @@ public class CategoryController : Controller
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.CategoryRepository.Add(category);
+            _unitOfWork.Category.Add(category);
             _unitOfWork.Save();
             TempData["success"] = "Category has created successfully";
             return RedirectToAction("Index");
@@ -48,7 +48,7 @@ public class CategoryController : Controller
             return NotFound();
         }
 
-        var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+        var category = _unitOfWork.Category.Get(x => x.Id == id);
         if (category == null)
         {
             return NotFound();
@@ -62,7 +62,7 @@ public class CategoryController : Controller
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.CategoryRepository.Update(category);
+            _unitOfWork.Category.Update(category);
             _unitOfWork.Save();
             TempData["success"] = "Category has updated successfully";
             return RedirectToAction("Index");
@@ -78,7 +78,7 @@ public class CategoryController : Controller
             return NotFound();
         }
 
-        var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+        var category = _unitOfWork.Category.Get(x => x.Id == id);
         if (category == null)
         {
             return NotFound();
@@ -90,13 +90,13 @@ public class CategoryController : Controller
     [HttpPost, ActionName("Delete")]
     public IActionResult UltimateDelete(int? id)
     {
-        var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+        var category = _unitOfWork.Category.Get(x => x.Id == id);
         if (category == null)
         {
             return NotFound();
         }
 
-        _unitOfWork.CategoryRepository.Remove(category);
+        _unitOfWork.Category.Remove(category);
         _unitOfWork.Save();
         TempData["success"] = "Category has deleted successfully";
         return RedirectToAction("Index");
