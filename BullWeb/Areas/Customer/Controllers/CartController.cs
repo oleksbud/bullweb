@@ -28,7 +28,7 @@ public class CartController : Controller
 
         ShoppingCartVm = new()
         {
-            ShoppingCartList = _unitOfWork.ShoppingCartRepository.GetAll(x => x.ApplicationUserId == userId,
+            ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId,
                 includeProperties: includeDictionaries)
         };
 
@@ -43,14 +43,14 @@ public class CartController : Controller
 
     public IActionResult Plus(int cartId)
     {
-        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+        var cartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
 
         if (cartFromDb == null)
         {
             return NotFound();
         }
         cartFromDb.Count += 1;
-        _unitOfWork.ShoppingCartRepository.Update(cartFromDb);  
+        _unitOfWork.ShoppingCart.Update(cartFromDb);  
         _unitOfWork.Save();
 
         return RedirectToAction(nameof(Index));
@@ -58,7 +58,7 @@ public class CartController : Controller
     
     public IActionResult Minus(int cartId)
     {
-        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+        var cartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
 
         if (cartFromDb == null)
         {
@@ -67,12 +67,12 @@ public class CartController : Controller
 
         if (cartFromDb.Count < 1)
         {
-            _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+            _unitOfWork.ShoppingCart.Remove(cartFromDb);
         }
         else
         {
             cartFromDb.Count -= 1;
-            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);  
+            _unitOfWork.ShoppingCart.Update(cartFromDb);  
         }
         _unitOfWork.Save();
 
@@ -81,14 +81,14 @@ public class CartController : Controller
     
     public IActionResult Remove(int cartId)
     {
-        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(x => x.Id == cartId);
+        var cartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
 
         if (cartFromDb == null)
         {
             return NotFound();
         }
         
-        _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+        _unitOfWork.ShoppingCart.Remove(cartFromDb);
         _unitOfWork.Save();
 
         return RedirectToAction(nameof(Index));

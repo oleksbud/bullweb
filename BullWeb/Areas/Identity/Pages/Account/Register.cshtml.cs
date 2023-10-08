@@ -136,7 +136,7 @@ namespace BullWeb.Areas.Identity.Pages.Account
                     Text = i,
                     Value = i
                 }),
-                CompanyList = _unitOfWork.CompanyRepository
+                CompanyList = _unitOfWork.Company
                     .GetAll()
                     .Select(i => new SelectListItem
                 {

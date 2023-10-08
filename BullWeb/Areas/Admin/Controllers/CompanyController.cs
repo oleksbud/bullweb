@@ -19,7 +19,7 @@ public class CompanyController : Controller
     
     public IActionResult Index()
     {
-        var company = _unitOfWork.CompanyRepository.GetAll().ToList();
+        var company = _unitOfWork.Company.GetAll().ToList();
         return View(company);
     }
     
@@ -31,7 +31,7 @@ public class CompanyController : Controller
         }
         else
         {
-            var company = _unitOfWork.CompanyRepository.Get(x => x.Id == id);
+            var company = _unitOfWork.Company.Get(x => x.Id == id);
             if (company == null)
             {
                 return NotFound();
@@ -49,11 +49,11 @@ public class CompanyController : Controller
 
             if (company.Id == 0)
             {
-                _unitOfWork.CompanyRepository.Add(company);
+                _unitOfWork.Company.Add(company);
             }
             else
             {
-                _unitOfWork.CompanyRepository.Update(company);
+                _unitOfWork.Company.Update(company);
             }
 
             _unitOfWork.Save();
@@ -85,13 +85,13 @@ public class CompanyController : Controller
     [HttpPost, ActionName("Delete")]
     public IActionResult UltimateDelete(int? id)
     {
-        var company = _unitOfWork.CompanyRepository.Get(x => x.Id == id);
+        var company = _unitOfWork.Company.Get(x => x.Id == id);
         if (company == null)
         {
             return NotFound();
         }
 
-        _unitOfWork.CompanyRepository.Remove(company);
+        _unitOfWork.Company.Remove(company);
         _unitOfWork.Save();
         TempData["success"] = "Company has deleted successfully";
         return RedirectToAction("Index");
@@ -102,7 +102,7 @@ public class CompanyController : Controller
     [HttpGet]
     public IActionResult GetAll()
     {
-        var companyList = _unitOfWork.CompanyRepository.GetAll().ToList();
+        var companyList = _unitOfWork.Company.GetAll().ToList();
         
         return Json(new { data = companyList });
     }
@@ -110,7 +110,7 @@ public class CompanyController : Controller
     [HttpDelete]
     public IActionResult Delete(int? id)
     {
-        var company = _unitOfWork.CompanyRepository.Get(x => x.Id == id);
+        var company = _unitOfWork.Company.Get(x => x.Id == id);
 
         if (company == null)
         {
