@@ -198,6 +198,30 @@ public class CartController : Controller
 
     public IActionResult OrderConfirmation(int id)
     {
+        var dictionary = new List<string> { "ApplicationUser" };
+        var orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == id, dictionary);
+
+        if (orderHeader.PaymentStatus != StaticDetails.PaymentStatusDelayedPayment)
+        {
+            // it is an order by customer
+            var service = new SessionService();
+            var session = service.Get(orderHeader.SessionId);
+
+            if (session.PaymentStatus.ToLower() == "paid")
+            {
+                _unitOfWork.OrderHeader.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
+                _unitOfWork.OrderHeader.UpdateStatuses(id, StaticDetails.StatusApproved, StaticDetails.PaymentStatusApproved);
+                _unitOfWork.Save();
+            }
+
+            List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
+                .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId)
+                .ToList();
+
+            _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+            _unitOfWork.Save();
+        }
+        
         return View(id);
     }
 
