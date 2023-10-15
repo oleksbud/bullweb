@@ -13,7 +13,8 @@ namespace BullWeb.Areas.Customer.Controllers;
 public class CartController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
-    public ShoppingCartVM ShoppingCartVm;
+    [BindProperty]
+    public ShoppingCartVM ShoppingCartVm { get; set; }
 
     public CartController(IUnitOfWork unitOfWork)
     {
@@ -93,6 +94,58 @@ public class CartController : Controller
         _unitOfWork.Save();
 
         return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    [ActionName("Summary")]
+    public IActionResult SummaryPost()
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var includeDictionaries = new List<string> { "Book" };
+
+        ShoppingCartVm.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId,
+            includeProperties: includeDictionaries);
+        
+        ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
+        ShoppingCartVm.OrderHeader.ApplicationUserId = userId;
+        ShoppingCartVm.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+        
+
+        foreach (var cart in ShoppingCartVm.ShoppingCartList)
+        {
+            cart.Price = GetPriceBasedOnQuantity(cart);
+            ShoppingCartVm.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+        }
+
+        if (ShoppingCartVm.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+        {
+            // it is a regular customer account and we need to capture payment
+            ShoppingCartVm.OrderHeader.PaymentStatus = StaticDetails.PaymentStatusPending;
+            ShoppingCartVm.OrderHeader.OrderStatus = StaticDetails.StatusPending;
+        }
+        else
+        {
+            // it is a company account
+            ShoppingCartVm.OrderHeader.PaymentStatus = StaticDetails.PaymentStatusDelayedPayment;
+            ShoppingCartVm.OrderHeader.OrderStatus = StaticDetails.StatusApproved;
+        }
+        
+        _unitOfWork.OrderHeader.Add(ShoppingCartVm.OrderHeader);
+
+        foreach (var cart in ShoppingCartVm.ShoppingCartList)
+        {
+            OrderDetail orderDetail = new()
+            {
+                BookId = cart.BookId,
+                OrderHeaderId = ShoppingCartVm.OrderHeader.Id,
+                Price = cart.Price,
+                Count = cart.Count
+            };
+            _unitOfWork.OrderDetail.Add(orderDetail);
+        }
+        _unitOfWork.Save();
+        
+        return View(ShoppingCartVm);
     }
 
     public IActionResult Summary()
