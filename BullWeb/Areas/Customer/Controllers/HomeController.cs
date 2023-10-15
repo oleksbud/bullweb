@@ -22,14 +22,14 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var dictionary = new List<string> { "Category" };
-        IEnumerable<Book> books = _unitOfWork.BookRepository.GetAll(x => true ,includeProperties: dictionary);
+        IEnumerable<Book> books = _unitOfWork.Book.GetAll(x => true ,includeProperties: dictionary);
         return View(books);
     }
 
     public IActionResult Details(int id)
     {
         var dictionary = new List<string> { "Category" };
-        var book = _unitOfWork.BookRepository.Get(x => x.Id == id, dictionary);
+        var book = _unitOfWork.Book.Get(x => x.Id == id, dictionary);
         if (book == null)
         {
             return NotFound();
@@ -53,7 +53,7 @@ public class HomeController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         shoppingCart.ApplicationUserId = userId;
 
-        var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(
+        var cartFromDb = _unitOfWork.ShoppingCart.Get(
             x => x.ApplicationUserId == userId
             && x.BookId == shoppingCart.BookId);
 
@@ -61,12 +61,12 @@ public class HomeController : Controller
         {
             // the book record in the shopping cart exists. Update it
             cartFromDb.Count += shoppingCart.Count;
-            _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+            _unitOfWork.ShoppingCart.Update(cartFromDb);
         }
         else
         {
             // add cart
-            _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+            _unitOfWork.ShoppingCart.Add(shoppingCart);
         }
 
         _unitOfWork.Save();

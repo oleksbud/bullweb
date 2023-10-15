@@ -2,11 +2,13 @@
 
 public interface IUnitOfWork
 {
-    ICategoryRepository CategoryRepository { get;  }
-    IBookRepository BookRepository { get; }
-    ICompanyRepository CompanyRepository { get; }
-    IShoppingCartRepository ShoppingCartRepository { get; }
-    IApplicationUserRepository ApplicationUserRepository { get; }
+    ICategoryRepository Category { get;  }
+    IBookRepository Book { get; }
+    ICompanyRepository Company { get; }
+    IShoppingCartRepository ShoppingCart { get; }
+    IApplicationUserRepository ApplicationUser { get; }
+    IOrderHeaderRepository OrderHeader { get; }
+    IOrderDetailRepository OrderDetail { get; }
 
     public void Save();
 }
