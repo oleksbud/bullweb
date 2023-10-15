@@ -45,7 +45,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+var sk_directenv = Environment.GetEnvironmentVariable("ASPNETCORE_Stripe__SecretKey");
+StripeConfiguration.ApiKey = sk_directenv;
 
 app.UseRouting();
 
