@@ -108,7 +108,8 @@ public class CartController : Controller
         
         ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
         ShoppingCartVm.OrderHeader.ApplicationUserId = userId;
-        ShoppingCartVm.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+        
+        ApplicationUser applicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
         
 
         foreach (var cart in ShoppingCartVm.ShoppingCartList)
@@ -117,7 +118,7 @@ public class CartController : Controller
             ShoppingCartVm.OrderHeader.OrderTotal += (cart.Price * cart.Count);
         }
 
-        if (ShoppingCartVm.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+        if (applicationUser.CompanyId.GetValueOrDefault() == 0)
         {
             // it is a regular customer account and we need to capture payment
             ShoppingCartVm.OrderHeader.PaymentStatus = StaticDetails.PaymentStatusPending;
@@ -131,6 +132,8 @@ public class CartController : Controller
         }
         
         _unitOfWork.OrderHeader.Add(ShoppingCartVm.OrderHeader);
+        _unitOfWork.Save();
+
 
         foreach (var cart in ShoppingCartVm.ShoppingCartList)
         {
@@ -142,10 +145,21 @@ public class CartController : Controller
                 Count = cart.Count
             };
             _unitOfWork.OrderDetail.Add(orderDetail);
+            _unitOfWork.Save();
         }
-        _unitOfWork.Save();
+
+        if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+        {
+            // it is a regular customer account and we need to capture payment
+            // stripe logic
+        }
         
-        return View(ShoppingCartVm);
+        return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVm.OrderHeader.Id });
+    }
+
+    public IActionResult OrderConfirmation(int id)
+    {
+        return View(id);
     }
 
     public IActionResult Summary()
