@@ -232,7 +232,8 @@
     @if (Model.OrderHeader.PaymentStatus == StaticDetails.PaymentStatusDelayedPayment &&
          Model.OrderHeader.OrderStatus == StaticDetails.StatusShipped)
     {
-        <button type="submit" class="btn btn-success form-control my-1">Pay Now</button>
+        <button type="submit" asp-action="DetailsPayNow"
+                class="btn btn-success form-control my-1">Pay Now</button>
     }
     @if (User.IsInRole(StaticDetails.RoleAdmin) || User.IsInRole(StaticDetails.RoleEmployee))
     {

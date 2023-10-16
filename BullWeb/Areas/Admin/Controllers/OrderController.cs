@@ -7,6 +7,7 @@ using Bull.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
+using Stripe.Checkout;
 
 namespace BullWeb.Areas.Admin.Controllers
 {
@@ -191,8 +192,79 @@ namespace BullWeb.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Details),new { id = OrderVm.OrderHeader.Id});
         }
+
+        [HttpPost]
+        [Authorize(Roles = StaticDetails.RoleAdmin + "," + StaticDetails.RoleEmployee)]
+        public IActionResult DetailsPayNow()
+        {
+            var dictionaryAppUser = new List<string> { "ApplicationUser" };
+            var dictionaryBooks = new List<string> { "OrderHeader", "Book" };
+            OrderVm.OrderHeader = _unitOfWork.OrderHeader
+                .Get(x => x.Id == OrderVm.OrderHeader.Id, dictionaryAppUser);
+            OrderVm.OrderDetails = _unitOfWork.OrderDetail
+                .GetAll(x => x.OrderHeaderId == OrderVm.OrderHeader.Id, dictionaryBooks);
+            
+            // stripe logic
+            const string domain = "https://localhost:7289/";
+            var successUrl = $"admin/order/PaymentConfirmation?orderHeaderId={OrderVm.OrderHeader.Id}";
+            var cancelUrl = $"admin/order/details?id={OrderVm.OrderHeader.Id}";
+            var options = new SessionCreateOptions()
+            {
+                SuccessUrl = domain + successUrl,
+                CancelUrl = domain + cancelUrl,
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment"
+            };
+
+            foreach (var item in OrderVm.OrderDetails)
+            {
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Book.Title
+                        }
+                    },
+                    Quantity = item.Count
+                };
+                options.LineItems.Add(sessionLineItem);
+            }
+            
+            var service = new SessionService();
+            var session = service.Create(options);
+            
+            _unitOfWork.OrderHeader.UpdateStripePaymentId(OrderVm.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+            Response.Headers.Add("Location", session.Url);
+
+            return new StatusCodeResult(303);
+        }
         
+        public IActionResult PaymentConfirmation(int orderHeaderId)
+        {
+            var dictionary = new List<string> { "ApplicationUser" };
+            var orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == orderHeaderId, dictionary);
+
+            if (orderHeader.PaymentStatus == StaticDetails.PaymentStatusDelayedPayment)
+            {
+                // it is an order by company
+                var service = new SessionService();
+                var session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateStripePaymentId(orderHeaderId, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeader.UpdateStatuses(orderHeaderId, orderHeader.OrderStatus, StaticDetails.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
+            }
         
+            return View(orderHeaderId);
+        }
 
         #region API CALLS
 
