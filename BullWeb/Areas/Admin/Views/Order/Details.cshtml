@@ -1,0 +1,30 @@
+﻿@model  OrderVM
+<partial name="_Notification" />
+
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Order List</h2>
+        </div>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Count</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.OrderDetails)
+        {
+            <tr>
+                <td>@item.Book.Title</td>
+                <td>@item.Count</td>
+                <td>@item.Price</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

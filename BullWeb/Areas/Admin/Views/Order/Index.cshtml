@@ -78,11 +78,12 @@
                 <td>@item.OrderHeader.OrderStatus</td>
                 <td>@item.OrderHeader.OrderTotal</td>
                 <td>
-                    @*<div class="w-75 btn-group" role="group">
-                        <a asp-action="UpdateOrCreate" asp-route-id="@item.Id" class="btn btn-primary mx-2">
-                            <i class="bi bi-pencil-square"></i> Edit
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-action="Details" asp-route-id="@item.OrderHeader.Id" class="btn btn-primary mx-2">
+                            <i class="bi bi-pencil-square"></i> Details
                         </a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-2">
+                    </div>
+                    @*    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-2">
                             <i class="bi bi-trash-fill"></i> Delete
                         </a>
                     </div>*@
