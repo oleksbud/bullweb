@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BullWeb.Areas.Admin.Controllers
 {
     [Area("admin")]
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -123,6 +124,41 @@ namespace BullWeb.Areas.Admin.Controllers
             TempData["Success"] = "Order Details Updated Successfully";
 
             return RedirectToAction(nameof(Details),new { id = orderHeaderFromDB.Id});
+        }
+        
+        [HttpPost]
+        [Authorize(Roles = StaticDetails.RoleAdmin + "," + StaticDetails.RoleEmployee)]
+        public IActionResult StartProcessing()
+        {
+            _unitOfWork.OrderHeader.UpdateStatuses(OrderVm.OrderHeader.Id, StaticDetails.StatusInProcess);
+            _unitOfWork.Save();
+            
+            TempData["Success"] = "Order Details Updated Successfully";
+
+            return RedirectToAction(nameof(Details),new { id = OrderVm.OrderHeader.Id});
+        }
+        
+        [HttpPost]
+        [Authorize(Roles = StaticDetails.RoleAdmin + "," + StaticDetails.RoleEmployee)]
+        public IActionResult ShipOrder()
+        {
+            var orderHeader = _unitOfWork.OrderHeader.Get(x => x.Id == OrderVm.OrderHeader.Id);
+            orderHeader.TrackingNumber = OrderVm.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = OrderVm.OrderHeader.Carrier;
+            orderHeader.OrderStatus = StaticDetails.StatusShipped;
+            orderHeader.ShippingDate = DateTime.Now;
+
+            if (orderHeader.PaymentStatus == StaticDetails.PaymentStatusDelayedPayment)
+            {
+                orderHeader.PaymentDueDate = DateTime.Now.AddDays(30);
+            }
+            
+            _unitOfWork.OrderHeader.Update(orderHeader);
+            _unitOfWork.Save();
+            
+            TempData["Success"] = "Order shipped Successfully";
+
+            return RedirectToAction(nameof(Details),new { id = OrderVm.OrderHeader.Id});
         }
 
         #region API CALLS
