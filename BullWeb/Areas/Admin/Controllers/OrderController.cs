@@ -6,6 +6,7 @@ using Bull.Models.ViewModels;
 using Bull.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace BullWeb.Areas.Admin.Controllers
 {
@@ -160,6 +161,38 @@ namespace BullWeb.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Details),new { id = OrderVm.OrderHeader.Id});
         }
+
+        [HttpPost]
+        [Authorize(Roles = StaticDetails.RoleAdmin + "," + StaticDetails.RoleEmployee)]
+        public IActionResult CancelOrder()
+        {
+            var orderHeader = _unitOfWork.OrderHeader.Get(x => x.Id == OrderVm.OrderHeader.Id);
+
+            if (orderHeader.PaymentStatus == StaticDetails.PaymentStatusApproved && !string.IsNullOrEmpty(orderHeader.PaymentIntentId) )
+            {
+                var options = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeader.PaymentIntentId
+                };
+
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+                
+                _unitOfWork.OrderHeader.UpdateStatuses(orderHeader.Id, StaticDetails.StatusCancelled, StaticDetails.StatusRefunded);
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatuses(orderHeader.Id, StaticDetails.StatusCancelled);
+            }
+            _unitOfWork.Save();
+            
+            TempData["Success"] = "Order cancelled Successfully";
+
+            return RedirectToAction(nameof(Details),new { id = OrderVm.OrderHeader.Id});
+        }
+        
+        
 
         #region API CALLS
 
