@@ -56,6 +56,18 @@ namespace BullWeb.Areas.Admin.Controllers
             return View(Orders);
         }
 
+        public IActionResult Details(int id)
+        {
+            var dictionaryAppUser = new List<string> { "ApplicationUser" };
+            var dictionaryBooks = new List<string> { "OrderHeader", "Book" };
+            OrderVM order = new OrderVM
+            {
+                OrderHeader = _unitOfWork.OrderHeader.Get(x => x.Id == id, dictionaryAppUser),
+                OrderDetails = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeaderId == id, dictionaryBooks)
+            };
+            return View(order);
+        }
+
         #region API CALLS
 
         [HttpGet]
