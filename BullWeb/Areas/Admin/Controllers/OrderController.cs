@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Security.Claims;
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
 using Bull.Models.ViewModels;
@@ -23,28 +24,45 @@ namespace BullWeb.Areas.Admin.Controllers
         
         public IActionResult Index(string status)
         {
-            Expression<Func<OrderHeader, bool>> condition;
+            Expression<Func<OrderHeader, bool>> statusCondition;
             switch (status)
             {
                 case "pending":
-                    condition = (x => x.PaymentStatus == StaticDetails.PaymentStatusPending);
+                    statusCondition = (x => x.PaymentStatus == StaticDetails.PaymentStatusPending);
                     break;
                 case "inprogress":
-                    condition = (x => x.OrderStatus == StaticDetails.StatusInProcess);
+                    statusCondition = (x => x.OrderStatus == StaticDetails.StatusInProcess);
                     break;
                 case "completed":
-                    condition = (x => x.OrderStatus == StaticDetails.StatusShipped);
+                    statusCondition = (x => x.OrderStatus == StaticDetails.StatusShipped);
                     break;
                 case "approved":
-                    condition = (x => x.OrderStatus == StaticDetails.StatusApproved);
+                    statusCondition = (x => x.OrderStatus == StaticDetails.StatusApproved);
                     break;
                 default:
-                    condition = (x => true);
+                    statusCondition = (x => true);
                     break;
             }
-            
+
+            Expression<Func<OrderHeader, bool>> roleCondition;
+            if (User.IsInRole(StaticDetails.RoleAdmin) || User.IsInRole(StaticDetails.RoleEmployee))
+            {
+                roleCondition = x => true;
+            }
+            else
+            {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                roleCondition = x => x.ApplicationUserId == userId;
+            }
+
+            var param = Expression.Parameter(typeof(OrderHeader), "x");
+            var finalConditionsBody =  Expression.AndAlso(
+                Expression.Invoke(roleCondition, param), Expression.Invoke(statusCondition, param));
+            var finalConditions = Expression.Lambda<Func<OrderHeader, bool>>(finalConditionsBody, param);
+
             var dictionary = new List<string> { "ApplicationUser" };
-            List<OrderHeader> objHeaders = _unitOfWork.OrderHeader.GetAll(condition, dictionary).ToList();
+            List<OrderHeader> objHeaders = _unitOfWork.OrderHeader.GetAll(finalConditions, dictionary).ToList();
             Orders = new List<OrderVM>();
 
             foreach (var orderHeader in objHeaders)
