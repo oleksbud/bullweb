@@ -52,8 +52,15 @@ namespace BullWeb.Areas.Admin.Controllers
             else
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                roleCondition = x => x.ApplicationUserId == userId;
+                if (claimsIdentity != null)
+                {
+                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    roleCondition = x => x.ApplicationUserId == userId;
+                }
+                else
+                {
+                    roleCondition = x => false;
+                }
             }
 
             var param = Expression.Parameter(typeof(OrderHeader), "x");
