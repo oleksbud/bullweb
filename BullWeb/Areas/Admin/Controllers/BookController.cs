@@ -111,6 +111,8 @@ public class BookController : Controller
         }
     }
 
+    #region API CALLS
+
     public IActionResult Delete(int? id)
     {
         if (id == null || id == 0)
@@ -141,4 +143,6 @@ public class BookController : Controller
         TempData["success"] = "Book has deleted successfully";
         return RedirectToAction("Index");
     }
+
+    #endregion
 }
