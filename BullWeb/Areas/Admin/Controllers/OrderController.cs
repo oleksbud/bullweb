@@ -3,6 +3,7 @@ using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
 using Bull.Models.ViewModels;
 using Bull.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullWeb.Areas.Admin.Controllers
@@ -11,7 +12,9 @@ namespace BullWeb.Areas.Admin.Controllers
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public List<OrderVM> Orders = new();
+        private List<OrderVM> Orders { get; set; }
+        [BindProperty]
+        public OrderVM OrderVm { get; set; }
 
         public OrderController(IUnitOfWork unitOfWork)
         {
@@ -60,12 +63,41 @@ namespace BullWeb.Areas.Admin.Controllers
         {
             var dictionaryAppUser = new List<string> { "ApplicationUser" };
             var dictionaryBooks = new List<string> { "OrderHeader", "Book" };
-            OrderVM order = new OrderVM
+            OrderVm = new OrderVM
             {
                 OrderHeader = _unitOfWork.OrderHeader.Get(x => x.Id == id, dictionaryAppUser),
                 OrderDetails = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeaderId == id, dictionaryBooks)
             };
-            return View(order);
+            return View(OrderVm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = StaticDetails.RoleAdmin + "," + StaticDetails.RoleEmployee)]
+        public IActionResult UpdateOrderDetails()
+        {
+            var orderHeaderFromDB = _unitOfWork.OrderHeader.Get(x => x.Id == OrderVm.OrderHeader.Id);
+
+            orderHeaderFromDB.Name = OrderVm.OrderHeader.Name;
+            orderHeaderFromDB.PhoneNumber = OrderVm.OrderHeader.PhoneNumber;
+            orderHeaderFromDB.StreetAddress = OrderVm.OrderHeader.StreetAddress;
+            orderHeaderFromDB.State = OrderVm.OrderHeader.State;
+            orderHeaderFromDB.City = OrderVm.OrderHeader.City;
+            orderHeaderFromDB.PostalCode = OrderVm.OrderHeader.PostalCode;
+            if (!string.IsNullOrEmpty(OrderVm.OrderHeader.Carrier))
+            {
+                orderHeaderFromDB.Carrier = OrderVm.OrderHeader.Carrier;
+            }
+            if (!string.IsNullOrEmpty(OrderVm.OrderHeader.TrackingNumber))
+            {
+                orderHeaderFromDB.TrackingNumber = OrderVm.OrderHeader.TrackingNumber;
+            }
+            
+            _unitOfWork.OrderHeader.Update(orderHeaderFromDB);
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Order Details Updated Successfully";
+
+            return RedirectToAction(nameof(Details),new { id = orderHeaderFromDB.Id});
         }
 
         #region API CALLS
