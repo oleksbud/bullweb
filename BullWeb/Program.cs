@@ -28,6 +28,21 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);//We set Time here 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+var fb_appSecretEnv = Environment.GetEnvironmentVariable("ASPNETCORE_Facebook__AppSecret");
+var fb_appIdEnv = Environment.GetEnvironmentVariable("ASPNETCORE_Facebook__AppId");
+builder.Services.AddAuthentication().AddFacebook(option =>
+{
+    option.AppId = fb_appIdEnv;
+    option.AppSecret = fb_appSecretEnv;
+});
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
@@ -53,6 +68,8 @@ app.UseRouting();
 app.UseAuthentication();;
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapRazorPages();
 

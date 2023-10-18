@@ -1,4 +1,5 @@
 ﻿@page
+@using Bull.Utility
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -9,7 +10,14 @@
 <div class="row">
     <div class="col-md-4">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
+            @if (User.IsInRole(StaticDetails.RoleAdmin))
+            {
+                <h2>Create a new account - ADMIN PORTAL</h2>
+            }
+            else
+            {
+                <h2>Create a new account.</h2>
+            }
             <hr/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
@@ -27,16 +35,19 @@
                 <label asp-for="Input.ConfirmPassword"></label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <div class="form-floating">
-                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-                    <option disabled selected>-- Select the role --</option>
-                </select>
-            </div>
-            <div class="form-floating">
-                <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select"  style="display: none">
-                    <option disabled selected>-- Select the Company --</option>
-                </select>
-            </div>
+            @if (User.IsInRole(StaticDetails.RoleAdmin))
+            {
+                <div class="form-floating">
+                    <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                        <option disabled selected>-- Select the role --</option>
+                    </select>
+                </div>
+                <div class="form-floating">
+                    <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select" style="display: none">
+                        <option disabled selected>-- Select the Company --</option>
+                    </select>
+                </div>
+            }
             <div class="form-floating">
                 <input asp-for="Input.StreetAddress" class="form-control" aria-required="true"/>
                 <label asp-for="Input.StreetAddress"></label>

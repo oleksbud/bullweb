@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Bull.DataAccess.Repository.IRepository;
 using Bull.Models.Models;
+using Bull.Utility;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,17 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (claim != null)
+        {
+            var userCart = _unitOfWork.ShoppingCart.GetAll(
+                x => x.ApplicationUserId == claim.Value).ToList();
+            var totalItems = userCart.Count;
+            HttpContext.Session.SetInt32(StaticDetails.SessionCart, totalItems);
+        }
+        
         var dictionary = new List<string> { "Category" };
         IEnumerable<Book> books = _unitOfWork.Book.GetAll(x => true ,includeProperties: dictionary);
         return View(books);
@@ -62,14 +74,19 @@ public class HomeController : Controller
             // the book record in the shopping cart exists. Update it
             cartFromDb.Count += shoppingCart.Count;
             _unitOfWork.ShoppingCart.Update(cartFromDb);
+            _unitOfWork.Save();
         }
         else
         {
             // add cart
             _unitOfWork.ShoppingCart.Add(shoppingCart);
+            _unitOfWork.Save();
+            
+            // modify total amount of items in session
+            var userCart = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId).ToList();
+            var totalItems = userCart.Count;
+            HttpContext.Session.SetInt32(StaticDetails.SessionCart, totalItems);
         }
-
-        _unitOfWork.Save();
 
         return RedirectToAction(nameof(Index));
     }

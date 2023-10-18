@@ -36,9 +36,13 @@ public class Repository<T> : IRepository<T> where T : class
         return  query.ToList();
     }
 
-    public T? Get(Expression<Func<T, bool>> filter)
+    public T? Get(Expression<Func<T, bool>> filter, bool tracked = false)
     {
-        IQueryable<T> query = dbSet.AsNoTracking();
+        IQueryable<T> query = dbSet;
+        if (!tracked)
+        {
+            query = query.AsNoTracking();
+        }
         query = query.Where(filter);
 
         return query.FirstOrDefault();

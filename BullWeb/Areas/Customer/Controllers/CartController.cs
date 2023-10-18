@@ -5,6 +5,8 @@ using Bull.Models.ViewModels;
 using Bull.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Editing;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Stripe.Checkout;
 
 namespace BullWeb.Areas.Customer.Controllers;
@@ -61,23 +63,27 @@ public class CartController : Controller
     
     public IActionResult Minus(int cartId)
     {
-        var cartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+        var cartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId, tracked: true);
 
         if (cartFromDb == null)
         {
             return NotFound();
-        }
-
+        }   
+        cartFromDb.Count -= 1;
         if (cartFromDb.Count < 1)
         {
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
         }
         else
         {
-            cartFromDb.Count -= 1;
             _unitOfWork.ShoppingCart.Update(cartFromDb);  
         }
         _unitOfWork.Save();
+        
+        var userCart = _unitOfWork.ShoppingCart.GetAll(
+            x => x.ApplicationUserId == cartFromDb.ApplicationUserId).ToList();
+        var totalItems = userCart.Count;
+        HttpContext.Session.SetInt32(StaticDetails.SessionCart, totalItems);
 
         return RedirectToAction(nameof(Index));
     }
@@ -93,6 +99,11 @@ public class CartController : Controller
         
         _unitOfWork.ShoppingCart.Remove(cartFromDb);
         _unitOfWork.Save();
+        
+        var userCart = _unitOfWork.ShoppingCart.GetAll(
+            x => x.ApplicationUserId == cartFromDb.ApplicationUserId).ToList();
+        var totalItems = userCart.Count;
+        HttpContext.Session.SetInt32(StaticDetails.SessionCart, totalItems);
 
         return RedirectToAction(nameof(Index));
     }
@@ -213,6 +224,7 @@ public class CartController : Controller
                 _unitOfWork.OrderHeader.UpdateStatuses(id, StaticDetails.StatusApproved, StaticDetails.PaymentStatusApproved);
                 _unitOfWork.Save();
             }
+            HttpContext.Session.Clear();
 
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
                 .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId)
