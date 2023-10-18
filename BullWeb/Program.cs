@@ -35,6 +35,14 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+var fb_appSecretEnv = Environment.GetEnvironmentVariable("ASPNETCORE_Facebook__AppSecret");
+var fb_appIdEnv = Environment.GetEnvironmentVariable("ASPNETCORE_Facebook__AppId");
+builder.Services.AddAuthentication().AddFacebook(option =>
+{
+    option.AppId = fb_appIdEnv;
+    option.AppSecret = fb_appSecretEnv;
+});
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
