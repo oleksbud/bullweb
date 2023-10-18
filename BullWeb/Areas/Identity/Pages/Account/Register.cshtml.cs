@@ -120,15 +120,6 @@ namespace BullWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            var customerRoleExists = await _roleManager.RoleExistsAsync(StaticDetails.RoleCustomer);
-            if (!customerRoleExists)
-            {
-                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleCustomer));
-                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleCompany));
-                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleAdmin));
-                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleEmployee));
-            }
-
             Input = new InputModel()
             {
                 RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
